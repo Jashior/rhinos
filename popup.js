@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       browser.tabs.create({ url: "https://elevenlabs.io/app/developers/api-keys" });
   });
 
-  // Save Settings
+  // Save Configuration Button (Explicit Save)
   btnSave.addEventListener('click', async () => {
     const key = apiKeyInput.value.trim();
     const voice = voiceSelect.value;
@@ -93,12 +93,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     showMessage("Key Removed");
   });
 
-  // Live Slider Updates
+  // Live Slider Updates & Auto-Persistence
   volSlider.addEventListener('input', () => {
-    sendMessageToActiveTab({ action: "UPDATE_SETTINGS", volume: parseFloat(volSlider.value) });
+    const val = parseFloat(volSlider.value);
+    // Save immediately so it persists for the next track/browser restart
+    browser.storage.local.set({ volume: val });
+    sendMessageToActiveTab({ action: "UPDATE_SETTINGS", volume: val });
   });
+
   speedSlider.addEventListener('input', () => {
-    sendMessageToActiveTab({ action: "UPDATE_SETTINGS", speed: parseFloat(speedSlider.value) });
+    const val = parseFloat(speedSlider.value);
+    // Save immediately so it persists for the next track/browser restart
+    browser.storage.local.set({ speed: val });
+    sendMessageToActiveTab({ action: "UPDATE_SETTINGS", speed: val });
+  });
+
+  // Auto-save Voice Selection
+  voiceSelect.addEventListener('change', () => {
+    browser.storage.local.set({ voiceId: voiceSelect.value });
   });
 
   // Playback Controls
@@ -192,10 +204,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (isPlaying) {
         iconPlay.classList.add('hidden');
         iconPause.classList.remove('hidden');
+        // Add glow/pulse animation class
+        btnPlayPause.classList.add('playing');
         nowPlaying.innerText = "Reading...";
     } else {
         iconPlay.classList.remove('hidden');
         iconPause.classList.add('hidden');
+        // Remove glow/pulse animation class
+        btnPlayPause.classList.remove('playing');
     }
   }
 
