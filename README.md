@@ -1,21 +1,26 @@
-# RHINOS TTS - Firefox Extension
+# Rhinos TTS - Firefox Extension
 
 Rhinos is a sophisticated Text-to-Speech extension for Firefox that utilizes the ElevenLabs API to read selected web content aloud with natural-sounding AI voices.
 
 ## Features
 - **Context Menu Integration**: Right-click any selected text to read it instantly.
 - **Audio Controls**: Play, Pause, Stop, Volume, and Speed controls via the browser popup.
-- **Customization**: Select from your available ElevenLabs voices (Free tier compatible).
+- **Customization**: Select from your available ElevenLabs voices (Free tier compatible via `multilingual_v2`).
 - **Dark Theme**: A clean, sophisticated Anthropic-style dark UI.
 
-## Installation (Developer Mode)
+## Privacy & Security
+- **API Key Storage**: Your ElevenLabs API Key is stored using `browser.storage.local`. This means the key resides locally on your machine within the browser's extension storage. It is **not** sent to any third-party servers other than the official ElevenLabs API endpoints required to generate audio.
+- **Input Security**: The API Key input field is masked (`type="password"`) to prevent shoulder surfing.
+- **Data Usage**: The extension only sends the text you specifically highlight and select to the ElevenLabs API for processing.
 
-Since this is a private developer build, you need to load it as a temporary add-on.
+## Installation (Experimental Add-on)
+
+This extension is currently distributed as an unpacked experimental add-on.
 
 1. **Download/Clone** this repository to a folder on your computer.
 2. **Create Icons**: 
    - Create a folder named `icons`.
-   - Add two PNG images: `icon.png` (48x48px) and `icon-128.png` (128x128px).
+   - Add two images: `icon.svg` (or .png) inside.
 3. **Open Firefox**.
 4. Navigate to `about:debugging`.
 5. Click on **"This Firefox"** in the sidebar.
@@ -25,9 +30,9 @@ Since this is a private developer build, you need to load it as a temporary add-
 ## Usage
 
 1. **Setup API Key**:
-   - Click the **RHINOS** extension icon in the top toolbar.
-   - Enter your **ElevenLabs API Key**. (You can find this in your ElevenLabs Profile Settings).
-   - Click **Refresh Voices** to load available voices.
+   - Click the **Rhinos** extension icon in the top toolbar.
+   - Enter your **ElevenLabs API Key**. (You can find this in your [ElevenLabs Dashboard](https://elevenlabs.io/app/developers/api-keys)).
+   - Click **Connect** to verify and load voices.
    - Click **Save Configuration**.
 
 2. **Read Text**:

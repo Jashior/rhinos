@@ -1,5 +1,5 @@
 /**
- * RHINOS TTS - Background Service
+ * Rhinos TTS - Background Service
  */
 
 // Create Context Menu on Install
@@ -27,8 +27,9 @@ async function processTTS(text, tabId) {
     // 1. Get Settings
     const data = await browser.storage.local.get(['apiKey', 'voiceId', 'modelId']);
     const apiKey = data.apiKey;
-    const voiceId = data.voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default to a popular voice
-    const modelId = data.modelId || "eleven_monolingual_v1";
+    const voiceId = data.voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default: Adam
+    // CHANGED: Default model to eleven_multilingual_v2 which is available on free tier
+    const modelId = data.modelId || "eleven_multilingual_v2";
 
     if (!apiKey) {
       console.error("No API Key found");
@@ -52,7 +53,7 @@ async function processTTS(text, tabId) {
         model_id: modelId,
         voice_settings: {
           stability: 0.5,
-          similarity_boost: 0.5
+          similarity_boost: 0.75
         }
       })
     });

@@ -4,18 +4,27 @@
  */
 
 let audioPlayer = null;
+let isPlaying = false;
 
 // Initialize Audio Player
 function initPlayer() {
   if (!audioPlayer) {
     audioPlayer = new Audio();
+    
     audioPlayer.onended = () => {
+        isPlaying = false;
         notifyStatus("ended");
     };
+    
     audioPlayer.onplay = () => {
+        isPlaying = true;
         notifyStatus("playing");
     };
+    
     audioPlayer.onpause = () => {
+        // Only notify paused if we didn't just switch sources immediately
+        // (The PLAY_AUDIO handler will override this if it's a track switch)
+        isPlaying = false;
         notifyStatus("paused");
     };
   }
@@ -28,13 +37,23 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case "PLAY_AUDIO":
       if (request.audioData) {
+        // Force state to playing immediately to prevent UI flickering
+        // if the previous track triggers a 'pause' event on source switch.
+        isPlaying = true; 
+        notifyStatus("playing");
+
         audioPlayer.src = request.audioData;
         
-        // Apply stored settings if available
+        // Apply stored settings if available, DEFAULT TO 0.5 Volume
         browser.storage.local.get(['volume', 'speed']).then((res) => {
-            audioPlayer.volume = res.volume !== undefined ? res.volume : 1.0;
+            audioPlayer.volume = res.volume !== undefined ? res.volume : 0.5;
             audioPlayer.playbackRate = res.speed !== undefined ? res.speed : 1.0;
-            audioPlayer.play().catch(e => console.error("Playback failed", e));
+            
+            audioPlayer.play().catch(e => {
+                console.error("Playback failed", e);
+                isPlaying = false;
+                notifyStatus("error");
+            });
         });
       }
       break;
@@ -50,6 +69,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case "CONTROL_STOP":
       audioPlayer.pause();
       audioPlayer.currentTime = 0;
+      isPlaying = false;
       notifyStatus("stopped");
       break;
 
@@ -58,9 +78,20 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.speed !== undefined) audioPlayer.playbackRate = request.speed;
       break;
 
+    case "GET_PLAYER_STATE":
+        // Popup requesting current state on open
+        if (isPlaying && !audioPlayer.paused) {
+            notifyStatus("playing");
+        } else {
+            notifyStatus("stopped");
+        }
+        break;
+
     case "STATUS_UPDATE":
-      // Used to show loading notifications if we built a UI overlay
-      // console.log("Rhinos Status:", request.status);
+      // Used to show loading notifications
+      if (request.status === 'generating') {
+        notifyStatus("generating");
+      }
       break;
       
     case "ERROR":

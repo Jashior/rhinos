@@ -5,8 +5,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const volSlider = document.getElementById('volume');
   const speedSlider = document.getElementById('speed');
   const btnSave = document.getElementById('saveSettings');
-  const btnRefresh = document.getElementById('refreshVoices');
+  const btnValidate = document.getElementById('validateBtn');
+  const btnRemoveKey = document.getElementById('removeKeyBtn');
   const messageArea = document.getElementById('messageArea');
+  const getKeyLink = document.getElementById('getKeyLink');
   
   // Playback Controls
   const btnPlayPause = document.getElementById('btnPlayPause');
@@ -19,16 +21,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load stored settings
   const data = await browser.storage.local.get(['apiKey', 'voiceId', 'volume', 'speed']);
   
-  if (data.apiKey) apiKeyInput.value = data.apiKey;
-  if (data.volume) volSlider.value = data.volume;
-  if (data.speed) speedSlider.value = data.speed;
-
-  // Initial Voice Load
+  // UI State Initialization
   if (data.apiKey) {
+    apiKeyInput.value = data.apiKey;
+    lockKeyInput(true);
     await loadVoices(data.apiKey, data.voiceId);
+  } else {
+    lockKeyInput(false);
   }
+  
+  // Set defaults if not present
+  volSlider.value = (data.volume !== undefined) ? data.volume : 0.5;
+  speedSlider.value = (data.speed !== undefined) ? data.speed : 1.0;
+
+  // Check if audio is currently playing on the active tab
+  sendMessageToActiveTab({ action: "GET_PLAYER_STATE" });
 
   // --- Event Listeners ---
+
+  // External Link Handler
+  getKeyLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      browser.tabs.create({ url: "https://elevenlabs.io/app/developers/api-keys" });
+  });
 
   // Save Settings
   btnSave.addEventListener('click', async () => {
@@ -52,18 +67,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       volume: vol, 
       speed: spd 
     });
-
-    if (key) loadVoices(key, voice);
   });
 
-  // Refresh Voices
-  btnRefresh.addEventListener('click', async () => {
+  // Validate & Connect
+  btnValidate.addEventListener('click', async () => {
     const key = apiKeyInput.value.trim();
     if(!key) {
       showMessage("Please enter API Key");
       return;
     }
     await loadVoices(key, voiceSelect.value);
+  });
+
+  // Remove Key
+  btnRemoveKey.addEventListener('click', async () => {
+    await browser.storage.local.remove(['apiKey', 'voiceId']);
+    apiKeyInput.value = '';
+    lockKeyInput(false);
+    
+    // Reset Voice Select
+    voiceSelect.innerHTML = '<option>Connect API Key first...</option>';
+    voiceSelect.disabled = true;
+    
+    statusDot.classList.remove('active', 'error');
+    showMessage("Key Removed");
   });
 
   // Live Slider Updates
@@ -77,7 +104,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Playback Controls
   btnPlayPause.addEventListener('click', () => {
     sendMessageToActiveTab({ action: "CONTROL_PAUSE" });
-    togglePlayIcon(); // Optimistic toggle
   });
 
   btnStop.addEventListener('click', () => {
@@ -88,9 +114,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // --- Functions ---
 
+  function lockKeyInput(isLocked) {
+    if (isLocked) {
+      apiKeyInput.disabled = true;
+      btnValidate.classList.add('hidden');
+      btnRemoveKey.classList.remove('hidden');
+    } else {
+      apiKeyInput.disabled = false;
+      btnValidate.classList.remove('hidden');
+      btnValidate.textContent = "Connect";
+      btnRemoveKey.classList.add('hidden');
+    }
+  }
+
   async function loadVoices(apiKey, currentVoiceId) {
     voiceSelect.disabled = true;
-    voiceSelect.innerHTML = '<option>Loading voices...</option>';
+    // Only show "Connecting" if we are explicitly validating
+    if (!apiKeyInput.disabled) {
+        voiceSelect.innerHTML = '<option>Connecting...</option>';
+        btnValidate.textContent = "Checking...";
+    }
     
     try {
       const response = await fetch('https://api.elevenlabs.io/v1/voices', {
@@ -100,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!response.ok) throw new Error("Failed to fetch voices");
 
       const json = await response.json();
-      voiceSelect.innerHTML = ''; // Clear loading
+      voiceSelect.innerHTML = ''; 
 
       // Add default/free voices
       json.voices.forEach(voice => {
@@ -112,13 +155,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       
       voiceSelect.disabled = false;
-      showMessage("Voices loaded");
+      lockKeyInput(true); 
+      
       statusDot.classList.add('active');
+      statusDot.classList.remove('error');
+      
+      // Auto-save key
+      browser.storage.local.set({ apiKey: apiKey });
 
     } catch (e) {
-      voiceSelect.innerHTML = '<option>Error loading voices</option>';
+      voiceSelect.innerHTML = '<option>Connection Failed</option>';
       console.error(e);
-      showMessage("Check API Key");
+      showMessage("Invalid Key or Network Error");
+      btnValidate.textContent = "Retry";
+      statusDot.classList.add('error');
+      statusDot.classList.remove('active');
     }
   }
 
@@ -126,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
       if (tabs[0]) {
         browser.tabs.sendMessage(tabs[0].id, msg).catch(() => {
-             nowPlaying.innerText = "No active player found";
+             nowPlaying.innerText = "No text selected";
         });
       }
     });
@@ -137,19 +188,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => messageArea.innerText = '', 2000);
   }
 
-  function togglePlayIcon() {
-    if (iconPause.classList.contains('hidden')) {
-        setPlayState(true);
-    } else {
-        setPlayState(false);
-    }
-  }
-
   function setPlayState(isPlaying) {
     if (isPlaying) {
         iconPlay.classList.add('hidden');
         iconPause.classList.remove('hidden');
-        nowPlaying.innerText = "Playing...";
+        nowPlaying.innerText = "Reading...";
     } else {
         iconPlay.classList.remove('hidden');
         iconPause.classList.add('hidden');
@@ -164,6 +207,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (req.state === "ended" || req.state === "stopped") {
               setPlayState(false);
               nowPlaying.innerText = "Finished";
+          }
+          if (req.state === "generating") {
+              nowPlaying.innerText = "Generating Audio...";
           }
       }
   });
