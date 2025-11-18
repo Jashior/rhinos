@@ -1,5 +1,9 @@
 # Rhinos TTS - Firefox Extension
 
+https://addons.mozilla.org/en-US/firefox/addon/rhinos-tts/
+
+<img width="310" height="465" alt="jUQZnVqCSi" src="https://github.com/user-attachments/assets/2d49ab90-84bc-4c4e-afc2-56f1779fd0ac" />
+
 Rhinos is a sophisticated Text-to-Speech extension for Firefox that utilizes the ElevenLabs API to read selected web content aloud with natural-sounding AI voices.
 
 ## Features
