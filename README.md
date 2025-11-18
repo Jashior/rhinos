@@ -8,10 +8,15 @@ Rhinos is a sophisticated Text-to-Speech extension for Firefox that utilizes the
 - **Customization**: Select from your available ElevenLabs voices (Free tier compatible via `multilingual_v2`).
 - **Dark Theme**: A clean, sophisticated Anthropic-style dark UI.
 
-## Privacy & Security
-- **API Key Storage**: Your ElevenLabs API Key is stored using `browser.storage.local`. This means the key resides locally on your machine within the browser's extension storage. It is **not** sent to any third-party servers other than the official ElevenLabs API endpoints required to generate audio.
-- **Input Security**: The API Key input field is masked (`type="password"`) to prevent shoulder surfing.
-- **Data Usage**: The extension only sends the text you specifically highlight and select to the ElevenLabs API for processing.
+## Privacy & Security Policy
+
+We believe in complete transparency regarding your data.
+
+1. **Local Storage**: Your ElevenLabs API Key is stored using `browser.storage.local`. This means the key resides **locally on your machine** within the browser's sandboxed extension storage. It is not synced to the cloud or accessible by other websites.
+2. **Data Transmission**: The extension **only** sends the specific text you highlight and select to the official ElevenLabs API endpoints for audio generation. No other content from the webpage is accessed or transmitted.
+3. **No Analytics**: This extension does not collect analytics, track user behavior, or store personal data. No information is transmitted to any third-party servers other than ElevenLabs.
+4. **Permission Usage**: We only request the minimum permissions required to read selected text (`activeTab`/`scripting`) and communicate with the API (`host_permissions`).
+5. **User Control**: You can delete your API key at any time by clicking the "Disconnect" (X) button in the extension popup, which immediately removes it from local storage.
 
 ## Installation (Experimental Add-on)
 
