@@ -1,0 +1,242 @@
+:root {
+  --bg-main: #111111;
+  --bg-card: #1c1c1c;
+  --text-main: #e6e6e6;
+  --text-muted: #888888;
+  --accent: #d4d4d0; 
+  --accent-hover: #ffffff;
+  --border: #333333;
+  --danger: #cf6679;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-size: 13px;
+}
+
+.container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rhino-icon {
+  font-size: 20px;
+}
+
+h1 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #444;
+  transition: background-color 0.3s;
+}
+
+.status-dot.active { background-color: #69db7c; }
+.status-dot.error { background-color: var(--danger); }
+
+/* Controls */
+.main-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-card);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.playback-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn.large {
+  width: 48px;
+  height: 48px;
+  border-color: var(--accent);
+  color: var(--bg-main);
+  background-color: var(--accent);
+}
+
+.control-btn:hover {
+  transform: scale(1.05);
+}
+
+.control-btn.large:hover {
+  background-color: var(--accent-hover);
+}
+
+.status-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  height: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border);
+  width: 100%;
+}
+
+/* Settings */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+}
+
+input:focus, select:focus {
+  border-color: var(--text-muted);
+}
+
+.sliders-row {
+  display: flex;
+  gap: 12px;
+}
+
+.slider-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+/* Actions */
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-top: 2px;
+}
+
+.text-btn:hover {
+  color: var(--text-main);
+}
+
+.primary-btn {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.primary-btn:hover {
+  background-color: var(--border);
+}
+
+.hidden {
+  display: none;
+}
+
+.message-area {
+  font-size: 11px;
+  color: var(--accent);
+  text-align: center;
+  min-height: 14px;
+}

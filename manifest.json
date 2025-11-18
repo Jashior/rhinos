@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "RHINOS TTS",
+  "version": "1.0",
+  "description": "Sophisticated Text-to-Speech using ElevenLabs API.",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://api.elevenlabs.io/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "48": "icons/icon.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

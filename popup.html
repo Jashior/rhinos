@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rhinos TTS</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-area">
+        <div class="rhino-icon">🦏</div>
+        <h1>RHINOS</h1>
+      </div>
+      <div class="status-dot" id="statusDot" title="System Ready"></div>
+    </header>
+
+    <div class="main-controls">
+      <div class="playback-buttons">
+        <button id="btnStop" class="control-btn" title="Stop">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+        </button>
+        <button id="btnPlayPause" class="control-btn large" title="Play/Pause">
+          <svg id="iconPlay" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="iconPause" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+      </div>
+      <div id="nowPlaying" class="status-text">Ready to read</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="settings-section">
+      <div class="input-group">
+        <label for="apiKey">ElevenLabs API Key</label>
+        <input type="password" id="apiKey" placeholder="sk_...">
+      </div>
+
+      <div class="input-group">
+        <label for="voiceSelect">Voice Model</label>
+        <select id="voiceSelect" disabled>
+          <option>Enter API Key first...</option>
+        </select>
+        <button id="refreshVoices" class="text-btn">Refresh Voices</button>
+      </div>
+
+      <div class="sliders-row">
+        <div class="slider-group">
+          <label for="volume">Vol</label>
+          <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+        </div>
+        <div class="slider-group">
+          <label for="speed">Speed</label>
+          <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+        </div>
+      </div>
+    </div>
+
+    <button id="saveSettings" class="primary-btn">Save Configuration</button>
+    
+    <div id="messageArea" class="message-area"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
