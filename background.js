@@ -28,8 +28,15 @@ async function processTTS(text, tabId) {
     const data = await browser.storage.local.get(['apiKey', 'voiceId', 'modelId']);
     const apiKey = data.apiKey;
     const voiceId = data.voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default: Adam
-    // CHANGED: Default model to eleven_multilingual_v2 which is available on free tier
-    const modelId = data.modelId || "eleven_multilingual_v2";
+    
+    // Logic to handle Free Tier Model compatibility
+    // If user has old deprecated model stored, force update to v2
+    let modelId = data.modelId || "eleven_multilingual_v2";
+    if (modelId === "eleven_monolingual_v1" || modelId === "eleven_multilingual_v1") {
+        console.log("Migrating deprecated model to eleven_multilingual_v2");
+        modelId = "eleven_multilingual_v2";
+        await browser.storage.local.set({ modelId: modelId });
+    }
 
     if (!apiKey) {
       console.error("No API Key found");
